@@ -5,7 +5,7 @@
 
   <h2>
     <th:block th:if="${pet['new']}" th:text="#{pet.new}">New Pet</th:block>
-    <th:block th:unless="${pet['new']}" th:text="#{pet.update}">New Pet</th:block>
+    <th:block th:unless="${pet['new']}" th:text="#{pet.update}">Pet</th:block>
   </h2>
   <form th:object="${pet}" class="form-horizontal" method="post">
     <input type="hidden" name="id" th:value="*{id}" />
