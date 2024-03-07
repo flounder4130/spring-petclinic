@@ -28,11 +28,11 @@ import jakarta.validation.constraints.NotBlank;
 public class Person extends BaseEntity {
 
 	@Column(name = "first_name")
-	@NotBlank
+	@NotBlank(message = "{field.validation.notblank}")
 	private String firstName;
 
 	@Column(name = "last_name")
-	@NotBlank
+	@NotBlank(message = "{field.validation.notblank}")
 	private String lastName;
 
 	public String getFirstName() {

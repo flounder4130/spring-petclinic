@@ -16,8 +16,12 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +36,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.context.MessageSource;
+
 
 import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -49,8 +55,12 @@ class OwnerController {
 
 	private final OwnerRepository owners;
 
-	public OwnerController(OwnerRepository clinicService) {
+	private final MessageSource messageSource;
+
+	public OwnerController(OwnerRepository clinicService, MessageSource messageSource) {
+		this.messageSource = messageSource;
 		this.owners = clinicService;
+
 	}
 
 	@InitBinder
@@ -72,13 +82,18 @@ class OwnerController {
 
 	@PostMapping("/owners/new")
 	public String processCreationForm(@Valid Owner owner, BindingResult result, RedirectAttributes redirectAttributes) {
+
+		Locale locale = LocaleContextHolder.getLocale();
+
 		if (result.hasErrors()) {
-			redirectAttributes.addFlashAttribute("error", "There was an error in creating the owner.");
+			String errorMessage = messageSource.getMessage("message.error.while.creating.owner", null, locale);
+			redirectAttributes.addFlashAttribute("error", errorMessage);
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "New Owner Created");
+		String successMessage = messageSource.getMessage("message.new.owner.created", null, locale);
+		redirectAttributes.addFlashAttribute("message", successMessage);
 		return "redirect:/owners/" + owner.getId();
 	}
 
@@ -138,14 +153,19 @@ class OwnerController {
 	@PostMapping("/owners/{ownerId}/edit")
 	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId,
 			RedirectAttributes redirectAttributes) {
+
+		Locale locale = LocaleContextHolder.getLocale();
+
 		if (result.hasErrors()) {
-			redirectAttributes.addFlashAttribute("error", "There was an error in updating the owner.");
+			String errorMessage = messageSource.getMessage("message.error.while.updating.owner", null, locale);
+			redirectAttributes.addFlashAttribute("error", errorMessage);
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 
 		owner.setId(ownerId);
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");
+		String successMessage = messageSource.getMessage("message.owner.updated", null, locale);
+		redirectAttributes.addFlashAttribute("message", successMessage);
 		return "redirect:/owners/{ownerId}";
 	}
 

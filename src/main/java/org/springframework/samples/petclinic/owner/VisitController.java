@@ -15,8 +15,11 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -41,8 +44,11 @@ class VisitController {
 
 	private final OwnerRepository owners;
 
-	public VisitController(OwnerRepository owners) {
+	private final MessageSource messageSource;
+
+	public VisitController(OwnerRepository owners, MessageSource messageSource) {
 		this.owners = owners;
+		this.messageSource = messageSource;
 	}
 
 	@InitBinder
@@ -89,7 +95,9 @@ class VisitController {
 
 		owner.addVisit(petId, visit);
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Your vist has been boked");
+		Locale locale = LocaleContextHolder.getLocale();
+		String message = messageSource.getMessage("visit.booked.successfully", null, locale);
+		redirectAttributes.addFlashAttribute("message", message);
 		return "redirect:/owners/{ownerId}";
 	}
 

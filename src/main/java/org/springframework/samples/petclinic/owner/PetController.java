@@ -17,7 +17,10 @@ package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Locale;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -46,8 +49,11 @@ class PetController {
 
 	private final OwnerRepository owners;
 
-	public PetController(OwnerRepository owners) {
+	private final MessageSource messageSource;
+
+	public PetController(OwnerRepository owners, MessageSource messageSource) {
 		this.owners = owners;
+		this.messageSource = messageSource;
 	}
 
 	@ModelAttribute("types")
@@ -117,7 +123,9 @@ class PetController {
 		}
 
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "New Pet has been Added");
+		Locale locale = LocaleContextHolder.getLocale();
+		String message = messageSource.getMessage("new.pet.added.successfully", null, locale);
+		redirectAttributes.addFlashAttribute("message", message);
 		return "redirect:/owners/{ownerId}";
 	}
 
@@ -155,7 +163,9 @@ class PetController {
 
 		owner.addPet(pet);
 		this.owners.save(owner);
-		redirectAttributes.addFlashAttribute("message", "Pet details has been edited");
+		Locale locale = LocaleContextHolder.getLocale();
+		String message = messageSource.getMessage("pet.details.edited.succesfully", null, locale);
+		redirectAttributes.addFlashAttribute("message", message);
 		return "redirect:/owners/{ownerId}";
 	}
 
